@@ -9,7 +9,7 @@ Con **PHPTGBot** è possibile utilizzare tutti i metodi presenti nelle [API di T
 ## Requisiti
 
 - PHP 5.6 o successivo (**7.3** raccomandato)
-- Database MySql
+- Database MySQL
 - Protocollo **HTTPS**
 - Eventuali plugins potrebbero richiedere spazio su disco per funzionare correttamente
 - È compatibile con Altervista.org
