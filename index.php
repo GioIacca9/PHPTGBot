@@ -1,7 +1,8 @@
 <?php
-// v1.0
+// v1.1
 
 error_reporting(0);
+mkdir("plugins/config");
 $update = json_decode(file_get_contents('php://input'), true);
 
 require 'config.php';
