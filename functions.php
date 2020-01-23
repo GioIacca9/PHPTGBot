@@ -91,6 +91,17 @@ if (isset($update['inline_query'])){
   $inline_query_offset = $update['inline_query']['offset'];
 }
 
+if (isset($update['poll_answer'])){
+  $poll_answer_pool_id = $update['poll_answer']['poll_id'];
+  $poll_answer_user_id = $update['poll_answer']['user']['id'];
+  $poll_answer_user_is_bot = $update['poll_answer']['user']['is_bot'];
+  $poll_answer_user_first_name = $update['poll_answer']['user']['first_name'];
+  $poll_answer_user_last_name = $update['poll_answer']['user']['last_name'];
+  $poll_answer_user_username = $update['poll_answer']['user']['username'];
+  $poll_answer_user_language_code = $update['poll_answer']['user']['language_code'];
+  $poll_answer_option_ids = $update['poll_answer']['option_ids'];
+}
+
 if (isset($message['replay_to_message'])){
   $replay_message_id = $message['replay_to_message']['message_id'];
   $replay_text = $message['replay_to_message']['text'];
@@ -185,11 +196,11 @@ if (isset($message['game'])){
 
 if (isset($message['photo'])){
   $photo = $message['photo'];
-  $photo_first_file_id = $message['photo']['file_id'];
-  $photo_first_file_unique_id = $message['photo']['file_unique_id'];
-  $photo_first_width = $message['photo']['width'];
-  $photo_first_height = $message['photo']['height'];
-  $photo_first_file_size = $message['photo']['file_size'];
+  $photo_file_id = $message['photo'][0]['file_id'];
+  $photo_file_unique_id = $message['photo'][0]['file_unique_id'];
+  $photo_width = $message['photo'][0]['width'];
+  $photo_height = $message['photo'][0]['height'];
+  $photo_file_size = $message['photo'][0]['file_size'];
   $caption = $message['caption'];
 }
 
@@ -270,11 +281,16 @@ if (isset($message['venue'])){
   $venue_foursquare_type = $message['venue']['foursquare_type'];
 }
 
-if (isset($message['pool'])){
-  $pool_id = $message['pool']['id'];
-  $pool_question = $message['pool']['question'];
-  $pool_options = $message['pool']['options'];
-  $pool_is_clodes = $message['pool']['is_closed'];
+if (isset($message['poll'])){
+  $poll_id = $message['poll']['id'];
+  $poll_question = $message['poll']['question'];
+  $poll_options = $message['poll']['options'];
+  $poll_total_voter_count = $message['poll']['total_voter_count'];
+  $poll_is_closed = $message['poll']['is_closed'];
+  $poll_is_anonymous = $message['poll']['is_anonymous'];
+  $poll_type = $message['poll']['type'];
+  $poll_allows_multiple_answers = $message['poll']['allows_multiple_answers'];
+  $poll_correct_option_id = $message['poll']['correct_option_id'];
 }
 
 if (isset($message['new_chat_member'])){
@@ -686,7 +702,7 @@ function sendContact($chat_id, $phone_number, $first_name, $last_name, $vcard, $
   return json_decode(http_request("sendContact", $args), true);
 }
 
-function sendPoll($chat_id, $question, $options, $disable_notification = "default", $reply_to_message_id, $reply_markup) {
+function sendPoll($chat_id, $question, $options, $is_anonymous, $type, $allows_multiple_answers, $correct_option_id, $is_closed, $disable_notification = "default", $reply_to_message_id, $reply_markup) {
 
   global $config;
 
@@ -699,6 +715,11 @@ function sendPoll($chat_id, $question, $options, $disable_notification = "defaul
     "disable_notification" => $disable_notification,
   ];
 
+  if (isset($is_anonymous)) $args["is_anonymous"] = $is_anonymous;
+  if (isset($type)) $args["type"] = $type;
+  if (isset($allows_multiple_answers)) $args["allows_multiple_answers"] = $allows_multiple_answers;
+  if (isset($correct_option_id)) $args["correct_option_id"] = $correct_option_id;
+  if (isset($is_closed)) $args["is_closed"] = $is_closed;
   if (isset($reply_to_message_id)) $args["reply_to_message_id"] = $reply_to_message_id;
   if (isset($reply_markup)) $args["reply_markup"] = $reply_markup;
 
