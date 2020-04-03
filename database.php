@@ -48,7 +48,7 @@ if ($config['database']['use_database']) {
       `status` TINYINT NOT NULL,
       `last_update` BIGINT NOT NULL,
       PRIMARY KEY(`id`)
-    ) ENGINE = MyISAM CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;");
+    ) ENGINE = MyISAM CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
 
     if ($pdo->errorInfo()[0] !== "00000") {
       $json = [
