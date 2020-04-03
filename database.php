@@ -38,7 +38,7 @@ if ($config['database']['use_database']) {
 
   if ($_GET['action'] == "create_database") {
 
-    $pdo->query("CREATE TABLE $bot_username (
+    $pdo->query("CREATE TABLE IF NOT EXISTS $bot_username (
       `id` INT NOT NULL AUTO_INCREMENT,
       `user_id` BIGINT NOT NULL,
       `first_name` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -48,7 +48,7 @@ if ($config['database']['use_database']) {
       `status` TINYINT NOT NULL,
       `last_update` BIGINT NOT NULL,
       PRIMARY KEY(`id`)
-    ) ENGINE = InnoDB;");
+    ) ENGINE = MyISAM;");
 
     if ($pdo->errorInfo()[0] !== "00000") {
       $json = [
