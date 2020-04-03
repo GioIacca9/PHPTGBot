@@ -19,6 +19,10 @@ if ($config['channels_work_with_edited_messages']){
   }
 }
 
+if (isset($update['channel_post'])){
+  $message = $update['channel_post'];
+}
+
 $update_id = $update['update_id'];
 $message_id = $message['message_id'];
 $text = $message['text'];
@@ -30,6 +34,7 @@ $username = $message['from']['username'];
 $language_code = $message['from']['language_code'];
 $date = $message['date'];
 $author_signature = $message['author_signature'];
+$forward_from_message_id = $message['forward_from_message_id'];
 $forward_signature = $message['forward_signature'];
 $chat_id = $message['chat']['id'];
 $chat_type = $message['chat']['type'];
