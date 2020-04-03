@@ -12,7 +12,7 @@ Con **PHPTGBot** è possibile utilizzare tutti i metodi presenti nelle [API di T
 - Database MySQL
 - Protocollo **HTTPS**
 - Eventuali plugins potrebbero richiedere spazio su disco per funzionare correttamente
-- È compatibile con Altervista.org
+- È compatibile con [Altervista](https://altervista.org)
 
 ---
 
