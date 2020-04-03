@@ -293,6 +293,10 @@ if (isset($message['poll'])){
   $poll_correct_option_id = $message['poll']['correct_option_id'];
 }
 
+if (isset($message['dice'])){
+  $dice_value = $message['dice']['value'];
+}
+
 if (isset($message['new_chat_member'])){
   $new_chat_member_id = $message['new_chat_member']['id'];
   $new_chat_member_is_bot = $message['new_chat_member']['is_bot'];
@@ -723,7 +727,24 @@ function sendPoll($chat_id, $question, $options, $is_anonymous, $type, $allows_m
   if (isset($reply_to_message_id)) $args["reply_to_message_id"] = $reply_to_message_id;
   if (isset($reply_markup)) $args["reply_markup"] = $reply_markup;
 
-  http_request("sendPoll", $args);
+  return json_decode(http_request("sendPoll", $args), true);
+}
+
+function sendDice($chat_id, $disable_notification = "default", $reply_to_message_id, $reply_markup){
+
+  global $config;
+
+  if ($disable_notification === "default") $disable_notification = $config['disable_notification'];
+
+  $args = [
+    "chat_id" => $chat_id,
+    "disable_notification" => $disable_notification,
+  ];
+
+  if (isset($reply_to_message_id)) $args["reply_to_message_id"] = $reply_to_message_id;
+  if (isset($reply_markup)) $args["reply_markup"] = $reply_markup;
+
+  return json_decode(http_request("sendDice", $args), true);
 }
 
 function sendChatAction($chat_id, $action) {
@@ -748,6 +769,7 @@ function getUserProfilePhotos($user_id, $offset, $limit) {
 
   if (isset($offset)) $args["offset"] = $offset;
   if (isset($limit)) $args["limit"] = $limit;
+
   return json_decode(http_request("getUserProfilePhotos", $args), true);
 }
 
@@ -1145,10 +1167,10 @@ function createNewStickerSet($user_id, $name, $title ,$png_sticker, $emojis, $co
     "user_id" => $user_id,
     "name" => $name,
     "title" => $title,
-    "png_sticker" => $png_sticker,
     "emojis" => $emojis,
   ];
 
+  if (isset($png_sticker)) $args['png_sticker'] = $png_sticker;
   if ($contains_mask) $args["contains_mask"] = $contains_mask;
   if (isset($mask_position)) $args["mask_position"] = $mask_position;
 
@@ -1194,6 +1216,18 @@ function deleteStickerFromSet($sticker) {
   return json_decode(http_request("deleteStickerFromSet", $args), true);
 }
 
+function setStickerSetThumb($name, $user_id, $thumb){
+
+  global $config;
+
+  $args = [
+    "name" => $name,
+    "user_id" => $user_id,
+  ];
+
+  if (isset($thumb)) $args["thumb"] = $thumb;
+}
+
 
 function answerInlineQuery($inline_query_id, $results, $cache_time, $is_personal, $next_offset, $swich_pm_text, $switch_pm_parameter){
 
@@ -1211,4 +1245,22 @@ function answerInlineQuery($inline_query_id, $results, $cache_time, $is_personal
   if (isset($switch_pm_parameter)) $args["switch_pm_parameter"] = $switch_pm_parameter;
  
   return json_decode(http_request("answerInlineQuery", $args), true);
+}
+
+function setMyCommands($commands){
+
+  global $config;
+
+  $args = [
+    "commands" => $commands,
+  ];
+
+  return json_decode(http_request("setMyCommands", $args), true);
+}
+
+function getMyCommands(){
+
+  global $config;
+
+  return json_decode(http_request("getMyCommands", $args), true);
 }

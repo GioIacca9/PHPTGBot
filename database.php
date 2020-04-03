@@ -2,23 +2,25 @@
 error_reporting(0);
 $pdo = new PDO("mysql:host=" . $config['database']['host'] . ";dbname=" . $config['database']['database'], $config['database']['username'], $config['database']['password']);
 $bot_username = $config['bot_username'];
+$stmt = $pdo->prepare("set names 'utf8mb4'");
+$stmt->execute();
 
 if ($config['database']['use_database']) {
   // Aggiunge o aggiorna l'utente nel database
 
   if (isset($message) || isset($update['callback_query'])) {
     $database_user_id = $user_id;
-    $database_first_name = urlencode($first_name);
-    $database_last_name = urlencode($last_name);
-    $database_username = urlencode($username);
+    $database_first_name = $first_name;
+    $database_last_name = $last_name;
+    $database_username = $username;
     $database_language_code = $language_code;
     $database_last_update = time();
     $database_status = 0;
   } elseif (isset($update['inline_query'])) {
     $database_user_id = $inline_query_from_id;
-    $database_first_name = urlencode($inline_query_from_first_name);
-    $database_last_name = urlencode($inline_query_from_last_name);
-    $database_username = urlencode($inline_query_from_username);
+    $database_first_name = $inline_query_from_first_name;
+    $database_last_name = $inline_query_from_last_name;
+    $database_username = $inline_query_from_username;
     $database_language_code = $inline_query_from_language_code;
     $database_last_update = time();
     $database_status = 0;
@@ -36,16 +38,17 @@ if ($config['database']['use_database']) {
 
   if ($_GET['action'] == "create_database") {
 
-    $pdo->query("CREATE TABLE IF NOT EXISTS $bot_username (
-      id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
-      user_id bigint NOT NULL,
-      first_name text NOT NULL,
-      last_name text NOT NULL,
-      username text NOT NULL,
-      language_code varchar(10) NOT NULL,
-      status tinyint NOT NULL,
-      last_update bigint NOT NULL
-    );");
+    $pdo->query("CREATE TABLE $bot_username (
+      `id` INT NOT NULL AUTO_INCREMENT,
+      `user_id` BIGINT NOT NULL,
+      `first_name` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+      `last_name` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+      `username` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+      `language_code` VARCHAR(10) NOT NULL,
+      `status` TINYINT NOT NULL,
+      `last_update` BIGINT NOT NULL,
+      PRIMARY KEY(`id`)
+    ) ENGINE = InnoDB;");
 
     if ($pdo->errorInfo()[0] !== "00000") {
       $json = [
