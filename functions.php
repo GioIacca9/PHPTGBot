@@ -1,7 +1,6 @@
 <?php
 error_reporting(0);
 
-
 $message = $update['message'];
 
 
@@ -33,9 +32,15 @@ $last_name = $message['from']['last_name'];
 $username = $message['from']['username'];
 $language_code = $message['from']['language_code'];
 $date = $message['date'];
-$author_signature = $message['author_signature'];
 $forward_from_message_id = $message['forward_from_message_id'];
 $forward_signature = $message['forward_signature'];
+$forward_sender_name = $message['forward_sender_name'];
+$forward_date = $message['forward_date'];
+$via_bot = $message['via_bot'];
+$edit_date = $message['edit_date'];
+$media_group_id = $message['media_group_id'];
+$author_signature = $message['author_signature'];
+$entities = $message['entities'];
 $chat_id = $message['chat']['id'];
 $chat_type = $message['chat']['type'];
 $chat_title = $message['chat']['title'];
@@ -96,6 +101,22 @@ if (isset($update['inline_query'])){
   $inline_query_offset = $update['inline_query']['offset'];
 }
 
+if (isset($update['poll'])){
+  $poll_id = $update['poll']['id'];
+  $poll_question = $update['poll']['question'];
+  $poll_options = $update['poll']['options'];
+  $poll_total_voter_count = $update['poll']['total_voter_count'];
+  $poll_is_closed = $update['poll']['is_closed'];
+  $poll_is_anonymous = $update['poll']['is_anonymous'];
+  $poll_type = $update['poll']['type'];
+  $poll_allows_multiple_answers = $update['poll']['allows_multiple_answers'];
+  $poll_correct_option_id = $update['poll']['correct_option_id'];
+  $poll_explanation = $update['poll']['explanation'];
+  $poll_explanation_entities = $update['poll']['explanation_entities'];
+  $open_period = $update['poll']['open_period'];
+  $close_date = $update['poll']['close_date'];
+}
+
 if (isset($update['poll_answer'])){
   $poll_answer_pool_id = $update['poll_answer']['poll_id'];
   $poll_answer_user_id = $update['poll_answer']['user']['id'];
@@ -108,22 +129,22 @@ if (isset($update['poll_answer'])){
 }
 
 if (isset($message['replay_to_message'])){
-  $replay_message_id = $message['replay_to_message']['message_id'];
-  $replay_text = $message['replay_to_message']['text'];
-  $replay_date = $message['replay_to_message']['date'];
+  $reply_to_message_id = $message['replay_to_message']['message_id'];
+  $reply_to_message_text = $message['replay_to_message']['text'];
+  $reply_to_message_date = $message['replay_to_message']['date'];
 
-  $replay_from_id = $message['replay_to_message']['from']['id'];
-  $replay_from_is_bot = $message['replay_to_message']['form']['is_bot'];
-  $replay_from_first_name = $message['replay_to_message']['form']['first_name'];
-  $replay_from_last_name = $message['replay_to_message']['form']['last_name'];
-  $replay_from_language_code = $message['replay_to_message']['form']['language_code'];
+  $reply_to_message_from_id = $message['replay_to_message']['from']['id'];
+  $reply_to_message_from_is_bot = $message['replay_to_message']['form']['is_bot'];
+  $reply_to_message_from_first_name = $message['replay_to_message']['form']['first_name'];
+  $reply_to_message_from_last_name = $message['replay_to_message']['form']['last_name'];
+  $reply_to_message_from_language_code = $message['replay_to_message']['form']['language_code'];
 
-  $replay_chat_id = $message['replay_to_message']['chat']['id'];
-  $replay_chat_type = $message['replay_to_message']['chat']['type'];
-  $replay_chat_title= $message['replay_to_message']['chat']['title'];
-  $replay_chat_username = $message['replay_to_message']['chat']['username'];
-  $replay_chat_first_name = $message['replay_to_message']['chat']['first_name'];
-  $replay_chat_last_name = $message['replay_to_message']['chat']['last_name'];
+  $reply_to_message_chat_id = $message['replay_to_message']['chat']['id'];
+  $reply_to_message_chat_type = $message['replay_to_message']['chat']['type'];
+  $reply_to_message_chat_title= $message['replay_to_message']['chat']['title'];
+  $reply_to_message_chat_username = $message['replay_to_message']['chat']['username'];
+  $reply_to_message_chat_first_name = $message['replay_to_message']['chat']['first_name'];
+  $reply_to_message_chat_last_name = $message['replay_to_message']['chat']['last_name'];
 }
 
 if (isset($message['audio'])){
@@ -296,9 +317,14 @@ if (isset($message['poll'])){
   $poll_type = $message['poll']['type'];
   $poll_allows_multiple_answers = $message['poll']['allows_multiple_answers'];
   $poll_correct_option_id = $message['poll']['correct_option_id'];
+  $poll_explanation = $message['poll']['explanation'];
+  $poll_explanation_entities = $message['poll']['explanation_entities'];
+  $open_period = $message['poll']['open_period'];
+  $close_date = $message['poll']['close_date'];
 }
 
 if (isset($message['dice'])){
+  $dice_emoji = $message['dice']['emoji'];
   $dice_value = $message['dice']['value'];
 }
 
@@ -711,23 +737,28 @@ function sendContact($chat_id, $phone_number, $first_name, $last_name, $vcard, $
   return json_decode(http_request("sendContact", $args), true);
 }
 
-function sendPoll($chat_id, $question, $options, $is_anonymous, $type, $allows_multiple_answers, $correct_option_id, $is_closed, $disable_notification = "default", $reply_to_message_id, $reply_markup) {
+function sendPoll($chat_id, $question, $options, $is_anonymous, $type, $allows_multiple_answers, $correct_option_id, $explanation, $explanation_parse_mode = "default", $open_period, $close_date, $is_closed, $disable_notification = "default", $reply_to_message_id, $reply_markup) {
 
   global $config;
 
+  if ($explanation_parse_mode == "default") $explanation_parse_mode = $config['parse_mode'];
   if ($disable_notification === "default") $disable_notification = $config['disable_notification'];
 
   $args = [
     "chat_id" => $chat_id,
     "question" => $question,
     "options" => $options,
+    "explanation_parse_mode" => $explanation_parse_mode,
     "disable_notification" => $disable_notification,
   ];
-
+  
   if (isset($is_anonymous)) $args["is_anonymous"] = $is_anonymous;
   if (isset($type)) $args["type"] = $type;
   if (isset($allows_multiple_answers)) $args["allows_multiple_answers"] = $allows_multiple_answers;
   if (isset($correct_option_id)) $args["correct_option_id"] = $correct_option_id;
+  if (isset($explanation)) $args["explanation"] = $explanation;
+  if (isset($open_period)) $args["open_period"] = $open_period;
+  if (isset($close_date)) $args["close_date"] = $close_date;
   if (isset($is_closed)) $args["is_closed"] = $is_closed;
   if (isset($reply_to_message_id)) $args["reply_to_message_id"] = $reply_to_message_id;
   if (isset($reply_markup)) $args["reply_markup"] = $reply_markup;
@@ -735,7 +766,7 @@ function sendPoll($chat_id, $question, $options, $is_anonymous, $type, $allows_m
   return json_decode(http_request("sendPoll", $args), true);
 }
 
-function sendDice($chat_id, $disable_notification = "default", $reply_to_message_id, $reply_markup){
+function sendDice($chat_id, $emoji,  $disable_notification = "default", $reply_to_message_id, $reply_markup){
 
   global $config;
 
@@ -746,6 +777,7 @@ function sendDice($chat_id, $disable_notification = "default", $reply_to_message
     "disable_notification" => $disable_notification,
   ];
 
+  if (isset($emoji)) $args["emoji"] = $emoji;
   if (isset($reply_to_message_id)) $args["reply_to_message_id"] = $reply_to_message_id;
   if (isset($reply_markup)) $args["reply_markup"] = $reply_markup;
 
@@ -1231,6 +1263,8 @@ function setStickerSetThumb($name, $user_id, $thumb){
   ];
 
   if (isset($thumb)) $args["thumb"] = $thumb;
+
+  return json_decode(http_request("setStickerSetThumb", $args), true);
 }
 
 

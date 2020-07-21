@@ -6,8 +6,7 @@ $stmt = $pdo->prepare("set names 'utf8mb4'");
 $stmt->execute();
 
 if ($config['database']['use_database']) {
-  // Aggiunge o aggiorna l'utente nel database
-
+  // Add or update user's data in the database
   if (isset($message) || isset($update['callback_query'])) {
     $database_user_id = $user_id;
     $database_first_name = $first_name;
@@ -41,10 +40,10 @@ if ($config['database']['use_database']) {
     $pdo->query("CREATE TABLE IF NOT EXISTS $bot_username (
       `id` INT NOT NULL AUTO_INCREMENT,
       `user_id` BIGINT NOT NULL,
-      `first_name` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-      `last_name` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-      `username` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-      `language_code` VARCHAR(10) NOT NULL,
+      `first_name` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
+      `last_name` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
+      `username` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
+      `language_code` VARCHAR(10) NULL,
       `status` TINYINT NOT NULL,
       `last_update` BIGINT NOT NULL,
       PRIMARY KEY(`id`)
